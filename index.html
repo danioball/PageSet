@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#245647">
+  <title>PageSet · Your reading journal</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./">▤ PageSet</a><div class="profile-tools"><label for="profile">Profile</label><select id="profile" aria-label="Active profile"></select><button id="new-profile">New profile</button></div></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">YOUR PERSONAL READING JOURNAL</p><h1>A little space for every book.</h1><p>Keep your books, revisit your favorites, and see your reading take shape.</p></div><button class="primary" id="add-book">+ Add a book</button></section>
+    <div class="tabs" role="tablist" aria-label="PageSet views"><button id="library-tab" role="tab" aria-selected="true" aria-controls="library">Library</button><button id="trends-tab" role="tab" aria-selected="false" aria-controls="trends" tabindex="-1">Reading trends</button></div>
+    <section id="library" role="tabpanel" aria-labelledby="library-tab">
+      <div class="toolbar"><label class="search">Search your library<input id="search" type="search" placeholder="Search by title or author"></label><label>Status<select id="status-filter"><option value="all">All books</option><option value="unread">Not started</option><option value="progress">In progress</option><option value="finished">Finished</option></select></label><label>Sort by<select id="sort"><option value="recent">Recently added</option><option value="title">Title</option><option value="author">Author</option></select></label></div>
+      <p id="book-count" class="muted"></p><div id="books" class="book-grid"></div>
+    </section>
+    <section id="trends" role="tabpanel" aria-labelledby="trends-tab" hidden>
+      <div class="toolbar"><div><h2>Your reading, in numbers</h2><p class="muted">Completed readings are counted by their finish date, including rereads.</p></div><label>From<input id="from" type="date"></label><label>Through<input id="through" type="date"></label><button id="all-time">All time</button></div>
+      <p id="range-error" role="alert"></p><div id="stats" class="stats"></div><div class="trend-grid"><article class="panel"><h2>Authors by average rating</h2><div id="authors"></div></article><article class="panel"><h2>Reading over time</h2><div id="months"></div></article></div>
+    </section>
+    <footer><p>Saved on this browser · <span id="profile-name"></span></p><div><button id="export">Export profile</button><button id="import">Import profile</button><input type="file" id="import-file" accept=".json,application/json" hidden><button class="danger" id="delete-profile">Delete profile</button></div></footer>
+  </main>
+  <p id="message" class="toast" role="status" hidden></p>
+  <dialog id="editor"><form id="editor-form"><div class="dialog-heading"><h2 id="editor-title"></h2><button type="button" id="close-editor" aria-label="Close dialog">✕</button></div><div id="editor-fields"></div><p id="form-error" role="alert"></p><div class="actions"><button type="button" id="cancel-editor">Cancel</button><button type="submit" class="primary">Save</button></div></form></dialog>
+</body>
+</html>
