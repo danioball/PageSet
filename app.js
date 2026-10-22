@@ -111,6 +111,19 @@ function editRead(book, read) {
     validateProfile({name:'Check',books:[{...book,reads:[values]}]});
     return commit(data=>{const reads=activeIn(data).books.find(b=>b.id===book.id).reads;if(read)Object.assign(reads.find(r=>r.id===read.id),values);else reads.push({id:id(),...values});});
   });
+  const startInput = $('#editor-form [name="startDate"]');
+  const endInput = $('#editor-form [name="endDate"]');
+  // Keep the calendar and typed-date validation in agreement when the start changes.
+  const syncDateRange = () => {
+    endInput.min = validDate(startInput.value) ? startInput.value : '0001-01-01';
+    endInput.setCustomValidity(
+      endInput.value && startInput.value && endInput.value < startInput.value
+        ? 'End date must be on or after the start date.' : ''
+    );
+  };
+  startInput.addEventListener('input', syncDateRange);
+  endInput.addEventListener('input', syncDateRange);
+  syncDateRange();
 }
 function initialize() {
   state=load(); render();
