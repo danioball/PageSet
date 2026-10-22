@@ -14,7 +14,8 @@ function validateProfile(profile) {
   for (const book of profile.books) {
     if (!book || !textValue(book.title,300) || !textValue(book.author,200) || !Array.isArray(book.reads)) throw Error('Each book needs a title, author, and reading history.');
     for (const read of book.reads) {
-      if (!read || !validDate(read.startDate) || read.startDate > today() || (read.endDate !== null && (!validDate(read.endDate) || read.endDate < read.startDate || read.endDate > today())) || (read.rating !== null && (!Number.isInteger(read.rating) || read.rating < 1 || read.rating > 5)) || typeof read.notes !== 'string' || read.notes.length > 20000) throw Error('A reading has invalid dates, rating, or notes.');
+      if (read && validDate(read.startDate) && validDate(read.endDate) && read.endDate < read.startDate) throw Error('End date must be on or after the start date.');
+      if (!read || !validDate(read.startDate) || (read.endDate !== null && (!validDate(read.endDate) || read.endDate < read.startDate)) || (read.rating !== null && (!Number.isInteger(read.rating) || read.rating < 1 || read.rating > 5)) || typeof read.notes !== 'string' || read.notes.length > 20000) throw Error('A reading has invalid dates, rating, or notes.');
     }
   }
   // Generate fresh identifiers so importing twice cannot create ID collisions.
@@ -105,7 +106,7 @@ function editBook(book) {
   });
 }
 function editRead(book, read) {
-  openEditor(read?'Edit reading':'Log a reading',`<p class="muted">${escapeHTML(book.title)}</p><div class="field-row"><label>Start date<input name="startDate" type="date" min="0001-01-01" max="${today()}" required value="${read?.startDate||today()}"></label><label>End date (optional)<input name="endDate" type="date" min="0001-01-01" max="${today()}" value="${read?.endDate||''}"></label></div><p class="muted">Leave the end date empty for a reading in progress.</p><label>Rating<select name="rating"><option value="">Unrated</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${read?.rating===n?'selected':''}>${n} ${n===1?'star':'stars'}</option>`).join('')}</select></label><label>Notes<textarea name="notes" maxlength="20000">${escapeHTML(read?.notes||'')}</textarea></label>`,form=>{
+  openEditor(read?'Edit reading':'Log a reading',`<p class="muted">${escapeHTML(book.title)}</p><div class="field-row"><label>Start date<input name="startDate" type="date" min="0001-01-01" required value="${read?.startDate||today()}"></label><label>End date (optional)<input name="endDate" type="date" min="0001-01-01" value="${read?.endDate||''}"></label></div><p class="muted">Leave the end date empty for a reading in progress.</p><label>Rating<select name="rating"><option value="">Unrated</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${read?.rating===n?'selected':''}>${n} ${n===1?'star':'stars'}</option>`).join('')}</select></label><label>Notes<textarea name="notes" maxlength="20000">${escapeHTML(read?.notes||'')}</textarea></label>`,form=>{
     const values={startDate:form.get('startDate'),endDate:form.get('endDate')||null,rating:form.get('rating')?Number(form.get('rating')):null,notes:form.get('notes')};
     validateProfile({name:'Check',books:[{...book,reads:[values]}]});
     return commit(data=>{const reads=activeIn(data).books.find(b=>b.id===book.id).reads;if(read)Object.assign(reads.find(r=>r.id===read.id),values);else reads.push({id:id(),...values});});
